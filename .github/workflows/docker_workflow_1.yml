@@ -78,7 +78,4 @@ jobs:
           #cache-from: type=gha
           #cache-to: type=gha,mode=max
           tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{env.VERSION}}
-
-          ### Create a PR comment with image tags and labels
-          ### defaults to false
-          comment-enable: false
+          
