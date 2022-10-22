@@ -10,8 +10,9 @@ env:
   REGISTRY: docker.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-
+  VERSION: 1.7.1
   TEST_TAG: ${{ github.repository }}:test
+  VERSION_TAG: ${{ github.repository }}:${{env.VERSION}}
   LATEST_TAG: ${{ github.repository }}:latest
 
 jobs:
@@ -30,9 +31,29 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # -
+      #   name: Build and push
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     push: true
+      #     tags: ${{env.TEST_TAG}}, ${{env.LATEST_TAG}}
+
+      -
+        name: Build and export to Docker
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          load: true
+          tags: ${{ env.TEST_TAG }}
+      -
+        name: Test
+        run: |
+          docker run --rm ${{ env.TEST_TAG }}
       -
         name: Build and push
         uses: docker/build-push-action@v3
         with:
+          context: .
+          platforms: linux/amd64
           push: true
-          tags: ${{env.TEST_TAG}}, ${{env.LATEST_TAG}}, ly4e/testingga:latest
+          tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}
