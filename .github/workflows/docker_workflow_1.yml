@@ -86,4 +86,4 @@ jobs:
           ##when using the buildkit layers can be cached to speed future builds
           #cache-from: type=gha
           #cache-to: type=gha,mode=max
-          tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{env.VERSION}}
+          ####tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{env.VERSION}}
