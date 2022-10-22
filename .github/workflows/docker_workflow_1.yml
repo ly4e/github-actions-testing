@@ -12,7 +12,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
   TEST_TAG: ${{ github.repository }}:test
-  LATEST_TAG: ${{IMAGE_NAME}}:latest
+  LATEST_TAG: ${{ github.repository }}:latest
 
 jobs:
   docker:
