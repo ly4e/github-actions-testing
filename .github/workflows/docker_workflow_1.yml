@@ -60,7 +60,7 @@ jobs:
           push: false
           load: true # Export to Docker Engine rather than pushing to a registry
           tags: ${{ github.run_id }},${{ env.TEST_TAG }}
-          target: test
+          ####target: test
       
       ###security testing of cve's
       - name: Run Trivy for all CVEs (non-blocking)
