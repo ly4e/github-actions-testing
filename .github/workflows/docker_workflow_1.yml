@@ -57,12 +57,24 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          load: true
-          tags: ${{ env.TEST_TAG }}
-      -
-        name: Test
+          push: false
+          load: true # Export to Docker Engine rather than pushing to a registry
+          tags: ${{ github.run_id }},${{ env.TEST_TAG }}
+          target: test
+      
+      ###security testing of cve's
+      - name: Run Trivy for all CVEs (non-blocking)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ github.run_id }}
+          exit-code: 0
+          format: table 
+      
+      # generic test of does the container run (not sure how this plays with different entrypoints)
+      - name: Test
         run: |
           docker run --rm ${{ env.TEST_TAG }}
+
       -
         name: Build and push
         uses: docker/build-push-action@v3
@@ -75,7 +87,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           #push: true
           ##when using the buildkit layers can be cached to speed future builds
-          #cache-from: type=gha
-          #cache-to: type=gha,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{env.VERSION}}
-          
