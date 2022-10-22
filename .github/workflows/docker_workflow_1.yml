@@ -12,7 +12,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   VERSION: 1.7.1
   TEST_TAG: ${{ github.repository }}:test
-  VERSION_TAG: ${{ github.repository }}:${{VERSION}}
+  VERSION_TAG: ${{ github.repository }}
+  #:${{VERSION}}
   LATEST_TAG: ${{ github.repository }}:latest
 
 jobs:
@@ -56,4 +57,4 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}
+          tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{env.VERSION}}
