@@ -35,4 +35,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{env.TEST_TAG}}, ${{env.LATEST_TAG}}, ly4e/testingGA:latest
+          tags: ${{env.TEST_TAG}}, ${{env.LATEST_TAG}}, ly4e/testingga:latest
