@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - 'README.md'
       - '.github/linters/**'
+    tags: [ 'v*.*.*' ]
   pull_request:
   #  branches: [ "main" ]
   # don't rebuild image if someone only edited unrelated files
@@ -29,8 +30,13 @@ env:
   LATEST_TAG: ${{ github.repository }}:latest
 
 jobs:
-  docker:
+  container_create:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      packages: write
+
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -82,7 +88,7 @@ jobs:
           output: 'trivy-results.sarif'
       
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
