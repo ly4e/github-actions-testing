@@ -11,7 +11,7 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
-  TEST_TAG: user/app:test
+  TEST_TAG: ${{ github.repository }}:test
   LATEST_TAG: ${{IMAGE_NAME}}:latest
 
 jobs:
