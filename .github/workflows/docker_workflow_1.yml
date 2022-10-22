@@ -12,7 +12,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   VERSION: 1.7.1
   TEST_TAG: ${{ github.repository }}:test
-  VERSION_TAG: ${{ github.repository }}:${{env.VERSION}}
+  VERSION_TAG: ${{ github.repository }}:${{VERSION}}
   LATEST_TAG: ${{ github.repository }}:latest
 
 jobs:
