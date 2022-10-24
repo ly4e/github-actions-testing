@@ -81,8 +81,17 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{env.IMAGE_NAME}}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+          labels: |
+            org.opencontainers.image.title=MyCustomTitle
+            org.opencontainers.image.description=Another description
+            org.opencontainers.image.vendor=MyCompany
 
-      - name: Build and export to Docker
+      - name: Build and Export to Docker for testing
         uses: docker/build-push-action@v3
         with:
           context: .
