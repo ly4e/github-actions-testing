@@ -2,7 +2,7 @@ name: Full Container Workflow - Build, Test, and Publish Container Image
 
 on:
   schedule:
-    - cron: '25 7 26 * *'
+    - cron: '15 7 25 * *'
   push:
     branches: [ "main" ]
         # don't rebuild image if someone only edited unrelated files
