@@ -82,11 +82,13 @@ jobs:
             org.opencontainers.image.description=Another description
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}
-            type=raw,value=${{ steps.date.outputs.date }}
-            type=raw,value={{date '%Y-%m-%dT%H%M'}}
             type=raw,value=latest
-            type=raw,value=${{ steps.getversion.outputs.version }}
-            type=raw,value=${{ steps.getlabelversion.outputs.lversion }}
+            type=raw,value=${{env.version}}
+            type=raw,value=${{env.lversion}}
+##            type=raw,value=${{ steps.getversion.outputs.version }}
+##            type=raw,value=${{ steps.getlabelversion.outputs.lversion }}
+#            type=raw,value={{date '%Y-%m-%dT%H%M'}}
+#            type=raw,value=${{ steps.date.outputs.date }}
 
       - name: Build and Export to Docker for testing
         uses: docker/build-push-action@v3
@@ -133,17 +135,21 @@ jobs:
 
       - name: Read VERSION file
         id: getversion
-        run: echo "::set-output name=version::$(cat VERSION)"
+        #run: echo "::set-output name=version::$(cat VERSION)"
         # reference with ->  ${{ steps.getversion.outputs.version }}
-
+        run: echo "version::$(cat VERSION)" >> $GITHUB_ENV
+        #env.version
       - name: Read VERSION from docker label...
         id: getlabelversion
-        run: echo "::set-output name=lversion::$(docker inspect ${{ env.TEST_TAG }} --format '{{ json .Config.Labels }}' | sed 's/,/\n/g'|grep SoftwareVersion |cut -d\" -f 4)"
+        #run: echo "::set-output name=lversion::$(docker inspect ${{ env.TEST_TAG }} --format '{{ json .Config.Labels }}' | sed 's/,/\n/g'|grep SoftwareVersion |cut -d\" -f 4)"
         # reference with ->  ${{ steps.getlabelversion.outputs.lversion }}
+        run: echo "lversion=$(docker inspect ${{ env.TEST_TAG }} --format '{{ json .Config.Labels }}' | sed 's/,/\n/g'|grep SoftwareVersion |cut -d\" -f 4)" >> $GITHUB_ENV
+        # env.lversion
 
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+### currently failes
+      # - name: Get current date
+      #   id: date
+      #   run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -162,3 +168,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           #$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          
+          
+          
+          #ACTION ITEM: set-output need to change...
