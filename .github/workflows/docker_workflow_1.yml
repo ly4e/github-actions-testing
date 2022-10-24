@@ -120,9 +120,9 @@ jobs:
         # reference with ->  ${{ steps.getlabelversion.outputs.lversion }}
         run: echo "lversion=$(docker inspect ${{ env.TEST_TAG }} --format '{{ json .Config.Labels }}' | sed 's/,/\n/g'|grep SoftwareVersion |cut -d\" -f 4)" >> $GITHUB_ENV
         # env.lversion
-      - name: Get current datetime
-        id: datetime
-        run: echo "datetime=(date +'%Y%m%dT%H%M%SZ')" >> GITHUB_ENV
+      # - name: Get current datetime
+      #   id: datetime
+      #   run: echo "datetime=(date +'%Y%m%dT%H%M%SZ')" >> GITHUB_ENV
 
 
       - name: Docker meta
@@ -135,10 +135,11 @@ jobs:
             org.opencontainers.image.description=Another description
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}
+            type=raw,value={{date 'YYYYMMDDTHHMMSSZ'}}
             type=raw,value=latest
             type=raw,value=${{env.version}}
             type=raw,value=${{env.lversion}}
-            type=raw,value=${{env.datetime}}
+# type=raw,value=${{env.datetime}}
 ##            type=raw,value=${{ steps.getversion.outputs.version }}
 ##            type=raw,value=${{ steps.getlabelversion.outputs.lversion }}
 #            type=raw,value={{date '%Y-%m-%dT%H%M'}}
