@@ -132,6 +132,12 @@ jobs:
         run: echo "::set-output name=version::$(cat VERSION)"
         # reference with ->  ${{ steps.getversion.outputs.version }}
 
+
+      - name: Read VERSION from docker label...
+        id: getlabelversion
+        run: echo "::set-output name=lversion::$(docker inspect ${{ env.TEST_TAG }} --format '{{ json .Config.Labels }}' | sed 's/,/\n/g'|grep SoftwareVersion |cut -d\" -f 4)"
+        # reference with ->  ${{ steps.getlabelversion.outputs.lversion }}
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -145,6 +151,7 @@ jobs:
           ##when using the buildkit layers can be cached to speed future builds
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{ steps.getversion.outputs.version }}
+          tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{ steps.getversion.outputs.version }}, ${{ env.VERSION_TAG }}:${{ steps.getlabelversion.outputs.lversion }}
           #tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          #$(date -u +'%Y-%m-%dT%H:%M:%SZ')
