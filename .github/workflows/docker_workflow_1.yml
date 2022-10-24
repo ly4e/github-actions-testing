@@ -76,6 +76,12 @@ jobs:
       #     push: true
       #     tags: ${{env.TEST_TAG}}, ${{env.LATEST_TAG}}
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{IMAGE_NAME}}
+
       - name: Build and export to Docker
         uses: docker/build-push-action@v3
         with:
@@ -129,4 +135,6 @@ jobs:
           ##when using the buildkit layers can be cached to speed future builds
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{env.VERSION}}
+          #tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{env.VERSION}}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
