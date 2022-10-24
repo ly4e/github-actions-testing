@@ -81,11 +81,13 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{env.IMAGE_NAME}}
+          sep-tags: ","
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type="beta"
           labels: |
             org.opencontainers.image.title=MyCustomTitle
             org.opencontainers.image.description=Another description
