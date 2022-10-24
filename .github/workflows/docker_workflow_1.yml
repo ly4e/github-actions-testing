@@ -1,4 +1,4 @@
-name: Build and Publish Container Image
+name: Full Container Workflow - Build, Test, and Publish Container Image
 
 on:
   schedule:
@@ -23,10 +23,9 @@ env:
   REGISTRY: docker.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  VERSION: 1.7.1
   TEST_TAG: ${{ github.repository }}:test
   VERSION_TAG: ${{ github.repository }}
-  #:${{VERSION}}
+  VERSION: 1.7.1
   LATEST_TAG: ${{ github.repository }}:latest
 
 jobs:
@@ -81,17 +80,9 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{env.IMAGE_NAME}}
-          sep-tags: ","
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type="beta"
           labels: |
-            org.opencontainers.image.title=MyCustomTitle
+            org.opencontainers.image.title="Test Conatiner Title"
             org.opencontainers.image.description=Another description
-            org.opencontainers.image.vendor=MyCompany
 
       - name: Build and Export to Docker for testing
         uses: docker/build-push-action@v3
@@ -103,7 +94,7 @@ jobs:
       
       ###security testing of cve's Blocking and Non-Blocking
       - name: Run Trivy for all CVEs (non-blocking)
-        if:  ${{ github.event_name = 'pull_request' }}
+        #if:  ${{ github.event_name == 'pull_request' }}
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ github.run_id }}
@@ -111,7 +102,7 @@ jobs:
           format: table 
 
       - name: Run Trivy for HIGH,CRITICAL CVEs and report (blocking)
-        if:  ${{ github.event_name = 'pull_request' }}
+        #if:  ${{ github.event_name == 'pull_request' }}
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ github.run_id }}
@@ -124,8 +115,8 @@ jobs:
       
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
-        #if: always()
-        if:  ${{ github.event_name = 'pull_request' }}
+        if: always()
+        #if:  ${{ github.event_name == 'pull_request' }}
         with:
           sarif_file: 'trivy-results.sarif'
       
@@ -135,8 +126,13 @@ jobs:
           docker run --rm ${{ env.TEST_TAG }}
         # docker run --rm ${{ github.run_id }} echo "run test commands here"
         # or some modified entrypoint to test the image
-      -
-        name: Build and push
+
+      - name: Read VERSION file
+        id: getversion
+        run: echo "::set-output name=version::$(cat VERSION)"
+        # reference with ->  ${{ steps.getversion.outputs.version }}
+
+      - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -149,6 +145,6 @@ jobs:
           ##when using the buildkit layers can be cached to speed future builds
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          #tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{env.VERSION}}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ env.LATEST_TAG }}, ${{ env.VERSION_TAG }}:${{ steps.getversion.outputs.version }}
+          #tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
