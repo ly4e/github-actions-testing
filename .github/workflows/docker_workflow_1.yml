@@ -103,6 +103,7 @@ jobs:
       
       ###security testing of cve's Blocking and Non-Blocking
       - name: Run Trivy for all CVEs (non-blocking)
+        if:  ${{ github.event_name = 'pull_request' }}
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ github.run_id }}
@@ -110,6 +111,7 @@ jobs:
           format: table 
 
       - name: Run Trivy for HIGH,CRITICAL CVEs and report (blocking)
+        if:  ${{ github.event_name = 'pull_request' }}
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ github.run_id }}
@@ -122,7 +124,8 @@ jobs:
       
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
-        if: always()
+        #if: always()
+        if:  ${{ github.event_name = 'pull_request' }}
         with:
           sarif_file: 'trivy-results.sarif'
       
