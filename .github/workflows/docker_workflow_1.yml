@@ -2,7 +2,7 @@ name: Full Container Workflow - Build, Test, and Publish Container Image
 
 on:
   schedule:
-    - cron: '25 20 1 * *'
+    - cron: '25 20 25 * *'
   push:
     branches: [ "main" ]
         # don't rebuild image if someone only edited unrelated files
@@ -83,6 +83,7 @@ jobs:
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}
             type=raw,value=${{ steps.date.outputs.date }}
+            type=raw,value={{date '%Y-%m-%dT%H:%M:%SZ'}}
             type=raw,value=latest
             type=raw,value=${{ steps.getversion.outputs.version }}
             type=raw,value=${{ steps.getlabelversion.outputs.lversion }}
