@@ -2,7 +2,7 @@ name: Full Container Workflow - Build, Test, and Publish Container Image
 
 on:
   schedule:
-    - cron: '25 7 24 * *'
+    - cron: '25 7 25 * *'
   push:
     branches: [ "main" ]
         # don't rebuild image if someone only edited unrelated files
@@ -120,11 +120,9 @@ jobs:
         # reference with ->  ${{ steps.getlabelversion.outputs.lversion }}
         run: echo "lversion=$(docker inspect ${{ env.TEST_TAG }} --format '{{ json .Config.Labels }}' | sed 's/,/\n/g'|grep SoftwareVersion |cut -d\" -f 4)" >> $GITHUB_ENV
         # env.lversion
-
-### currently failes
-      # - name: Get current date
-      #   id: date
-      #   run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y%m%dT%H%M%SZ')"
 
 
       - name: Docker meta
@@ -140,6 +138,7 @@ jobs:
             type=raw,value=latest
             type=raw,value=${{env.version}}
             type=raw,value=${{env.lversion}}
+            type=raw,value=${{env.date}}
 ##            type=raw,value=${{ steps.getversion.outputs.version }}
 ##            type=raw,value=${{ steps.getlabelversion.outputs.lversion }}
 #            type=raw,value={{date '%Y-%m-%dT%H%M'}}
